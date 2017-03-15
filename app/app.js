@@ -3,18 +3,21 @@ const commit_preface_regex = /\[.*(#\d+\s*)\]/
 
 function getPivotalStoryIds() {
   let commentBody = $('.edit-comment-hide')[0].innerHTML;
-  let matches = commentBody.match(story_id_regex);
-  let storyIds = [];
+  if (commentBody[0]) {
+    let matches = commentBody.match(story_id_regex);
+    let storyIds = [];
 
-  for (var i = 0; i < matches.length; i++) {
-    match = matches[i];
-    id = match.match(/\d+/);
-    if (id) {
-      storyIds.push(`#${id[0]}`);
+    for (var i = 0; i < matches.length; i++) {
+      match = matches[i];
+      id = match.match(/\d+/);
+      if (id) {
+        storyIds.push(`#${id[0]}`);
+      }
     }
-  }
 
-  return $.unique(storyIds);
+    return $.unique(storyIds);
+  }
+  return [];
 }
 
 function setCommitMessage(pivotalStoryIds) {
@@ -32,7 +35,11 @@ function setCommitMessage(pivotalStoryIds) {
   }
 }
 
-$(document).ready(() => {
+function load() {
   let pivotalStoryIds = getPivotalStoryIds();
   setCommitMessage(pivotalStoryIds);
-})
+}
+
+$(window).bind('DOMSubtreeModified', () => load());
+
+$(document).ready(() => load())
