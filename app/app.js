@@ -30,19 +30,20 @@ function getPivotalStoryIds() {
 function setCommitMessage(pivotalStoryIds) {
   if (pivotalStoryIds.length > 0) {
     let commitField = document.getElementById('merge_title_field');
-    let matches = commmitField.value.match(commit_preface_regex);
+    let matches = commitField.value.match(commit_preface_regex);
     let commitPreface = `[Delivers ${pivotalStoryIds.join(' ')}]`;
     let commitMessage = `${commitPreface} ${commitField.value}`;
 
-    if (matches.length == 0) {
-      commitField.value = commitMessage;
-    } else {
+    if (matches && matches.length > 0) {
       commitField.value = commitField.value.replace(matches[0], commitPreface)
+    } else {
+      commitField.value = commitMessage;
     }
   }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('loaded!')
   let pivotalStoryIds = getPivotalStoryIds();
   setCommitMessage(pivotalStoryIds);
 })
