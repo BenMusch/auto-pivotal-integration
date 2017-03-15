@@ -1,4 +1,5 @@
 const story_id_regex = /\/(story\/show|stories)\/(\d+)/
+const commit_preface_regex = /\[.*(#\d+\s*)\]/
 
 function removeDuplicates(a) {
   var temp = {};
@@ -28,12 +29,20 @@ function getPivotalStoryIds() {
 
 function setCommitMessage(pivotalStoryIds) {
   if (pivotalStoryIds.length > 0) {
-    let commitPreface = `[Delivers ${pivotalStoryIds.join(' ')}]`;
     let commitField = document.getElementById('merge_title_field');
-    commitMessage = `${commitPreface} ${commitField.value}`;
-    commitField.value = commitMessage;
+    let matches = commmitField.value.match(commit_preface_regex);
+    let commitPreface = `[Delivers ${pivotalStoryIds.join(' ')}]`;
+    let commitMessage = `${commitPreface} ${commitField.value}`;
+
+    if (matches.length == 0) {
+      commitField.value = commitMessage;
+    } else {
+      commitField.value = commitField.value.replace(matches[0], commitPreface)
+    }
   }
 }
 
-let pivotalStoryIds = getPivotalStoryIds();
-setCommitMessage(pivotalStoryIds);
+document.addEventListener('DOMContentLoaded', function() {
+  let pivotalStoryIds = getPivotalStoryIds();
+  setCommitMessage(pivotalStoryIds);
+})
