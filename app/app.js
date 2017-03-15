@@ -1,18 +1,8 @@
 const story_id_regex = /\/(story\/show|stories)\/(\d+)/
 const commit_preface_regex = /\[.*(#\d+\s*)\]/
 
-function removeDuplicates(a) {
-  var temp = {};
-  for (var i = 0; i < a.length; i++)
-    temp[a[i]] = true;
-  var r = [];
-  for (var k in temp)
-      r.push(k);
-  return r;
-}
-
 function getPivotalStoryIds() {
-  let commentBody = document.getElementsByClassName('edit-comment-hide')[0].innerHTML;
+  let commentBody = $('.edit-comment-hide')[0].innerHTML;
   let matches = commentBody.match(story_id_regex);
   let storyIds = [];
 
@@ -24,12 +14,12 @@ function getPivotalStoryIds() {
     }
   }
 
-  return removeDuplicates(storyIds);
+  return $.unique(storyIds);
 }
 
 function setCommitMessage(pivotalStoryIds) {
   if (pivotalStoryIds.length > 0) {
-    let commitField = document.getElementById('merge_title_field');
+    let commitField = $('#merge_title_field')[0];
     let matches = commitField.value.match(commit_preface_regex);
     let commitPreface = `[Delivers ${pivotalStoryIds.join(' ')}]`;
     let commitMessage = `${commitPreface} ${commitField.value}`;
@@ -42,8 +32,7 @@ function setCommitMessage(pivotalStoryIds) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('loaded!')
+$(document).ready(() => {
   let pivotalStoryIds = getPivotalStoryIds();
   setCommitMessage(pivotalStoryIds);
 })
